@@ -10,7 +10,78 @@
             <?php endforeach; ?>
 
         </h1>
+        <hr>
+        <div class="usuarios">
+            <h2>Participantes del Proyecto:</h2>
+            <div class="agregar-usuario">
+                <form action="#" class="agregar-usuario">
+                    <div class="campo">
+                        <label for="tarea">Usuario:</label>
+                        <select name="usuario" id="usuario-proyecto" required>
+                            <option disabled selected>-- Seleccione un Usuario --</option>
+                            <?php
+                            $usuarios = obtenerUsuarios();
+                            if ($usuarios->num_rows > 0) :
+                                foreach ($usuarios as $usuario) :
+                            ?>
+                                    <option value="<?php echo $usuario['id']; ?>">
+                                        <?php echo $usuario['usuario']; ?>
+                                    </option>
+                            <?php
+                                endforeach;
+                            endif; ?>
+                        </select>
+                    </div>
+                    <div class="campo enviar">
+                        <input type="hidden" value="<?php echo $id_proyecto ?>" id="id_usuario_proyecto">
+                        <input type="submit" class="boton projecto-usuario" value="Agregar">
+                    </div>
+                </form>
+            </div>
+            <table class="lista-usuarios" style="width: 100%;">
+                <thead>
+                    <th>Nombre</th>
+                    <th>Rol</th>
+                    <?php
+                    if (isset($_SESSION['tipo']) && $_SESSION['tipo'] === 1) : ?>
+                        <th>Acciones</th>
+                    <?php
+                    endif;
+                    ?>
+                </thead>
+                <tbody>
+                    <?php
 
+                    $usuario_has_proyecto = obtenerUsuarioDelHas($id_proyecto);
+                    $usuarioDeHas = mysqli_fetch_assoc($usuario_has_proyecto);
+                    echo "<pre>";
+                    var_dump($usuarioDeHas);
+                    echo "</pre>";
+                    if ($usuario_has_proyecto->num_rows > 0) :
+                        foreach ($usuario_has_proyecto as $usuarioHas) : ?>
+                            <tr style="border: 1px solid #e1e1e1;">
+                                <td><?php echo $usuarioHas['usuario']; ?></td>
+                                <td><?php echo $usuarioHas['nombre']; ?></td>
+                                <?php
+                                if (isset($_SESSION['tipo']) && $_SESSION['tipo'] === 1) : ?>
+                                    <td>
+                                        <button data-id="<?php echo $usuarioHas['id']; ?>" type="button" class="btn-borrar btn">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                <?php
+                                endif;
+                                ?>
+                            </tr>
+                    <?php
+                        endforeach;
+                    endif; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- -- Tareas del Proyecto -- -->
+        <h2>Listado de tareas:</h2>
         <form action="#" class="agregar-tarea">
             <div class="campo">
                 <label for="tarea">Tarea:</label>
@@ -26,10 +97,6 @@
         // Si no hay proyecto seleccionados
         echo "<p>Selecciona un Proyecto a la izquierda</p>";
     endif; ?>
-
-
-
-    <h2>Listado de tareas:</h2>
 
     <div class="listado-pendientes">
         <ul>

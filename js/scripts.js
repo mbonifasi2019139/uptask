@@ -40,6 +40,13 @@ function eventListeners() {
       .querySelector("#listado-usuarios tbody")
       .addEventListener("click", seleccionarIdUsuario);
   }
+
+  //Boton agregar usuario al proyecto
+  if (document.querySelector(".projecto-usuario")) {
+    document
+      .querySelector(".projecto-usuario")
+      .addEventListener("click", obtenerUsuarioProyecto);
+  }
 }
 
 function nuevoProyecto(e) {
@@ -425,5 +432,60 @@ function eliminarUsuario(id) {
   };
 
   // Enviamos la peticion
+  xhr.send(datos);
+}
+
+// Obtenemos el id del usuario y el id del proyecto
+function obtenerUsuarioProyecto(e) {
+  e.preventDefault();
+  console.log("works");
+
+  // Obteneniendo el id del usuario
+  let indexUsuario, idUsuario;
+  if (document.querySelector("#usuario-proyecto")) {
+    indexUsuario = document.querySelector("#usuario-proyecto").options
+      .selectedIndex;
+
+    idUsuario = document.querySelector("#usuario-proyecto").item(indexUsuario)
+      .value;
+  }
+
+  // Obtenemos el id del proyecto
+  let idProyecto = document.querySelector("#id_usuario_proyecto").value;
+
+  if (idUsuario && !isNaN(idUsuario)) {
+    agregarUsuarioProyecto(idUsuario, idProyecto);
+  } else {
+    swal({
+      title: "Advertencia",
+      text: "Debe elegir un usuario",
+      type: "warning",
+    });
+  }
+}
+
+// Agregarmos el usuario al entidad has
+function agregarUsuarioProyecto(idUsuario, idProyecto) {
+  // Preparemo los datos
+  let datos = new FormData();
+  datos.append("idUsuario", idUsuario);
+  datos.append("idProyecto", idProyecto);
+  datos.append("accion", "crear");
+
+  // LLamamos a AJAX
+  let xhr = new XMLHttpRequest();
+
+  // Abrimos la conexion
+  xhr.open("POST", "inc/modelos/modelo-proyecto_has_usuario.php", true);
+
+  // On load
+  xhr.onload = function () {
+    if (this.status === 200) {
+      let respuesta = JSON.parse(xhr.responseText);
+      console.log(respuesta);
+    }
+  };
+
+  // Enviamos los datos
   xhr.send(datos);
 }

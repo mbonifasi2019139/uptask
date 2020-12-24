@@ -3,7 +3,6 @@
     <hr>
     <div class="usuarios">
         <h2>Usuarios</h2>
-        <br>
         <table id="listado-usuarios" style="width: 100%;">
             <thead>
                 <th>Usuario</th>
@@ -13,9 +12,6 @@
             <tbody>
                 <?php
                 $usuarios = obtenerUsuarios();
-                echo "<pre>";
-                var_dump($usuarios);
-                echo "</pre>";
                 if ($usuarios->num_rows > 0) :
                     foreach ($usuarios as $usuario) :
                 ?>

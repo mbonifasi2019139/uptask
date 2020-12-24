@@ -4,9 +4,9 @@ include 'inc/funciones/funciones.php';
 include 'inc/templates/header.php';
 include 'inc/templates/barra.php';
 
-echo "<pre>";
-var_dump($_SESSION);
-echo "</pre>";
+//echo "<pre>";
+//var_dump($_SESSION);
+//echo "</pre>";
 // Obtener el ID de la URL
 if (isset($_GET['id_proyecto'])) {
     $id_proyecto = $_GET['id_proyecto'];

@@ -89,3 +89,15 @@ function obtenerUsuario($id_usuario)
         return false;
     }
 }
+
+function obtenerUsuarioDelHas($id_proyecto)
+{
+    include 'conexion.php';
+
+    try {
+        return $conn->query("SELECT u.usuario as usuario, tp.nombre as nombre, u.id as id FROM usuario u INNER JOIN tipousuario tp ON tp.id = u.idtipousuario INNER JOIN proyecto_has_usuario phu on phu.id_usuario = u.id INNER JOIN proyecto p ON phu.id_proyecto = p.id WHERE p.id = {$id_proyecto}");
+    } catch (Exception $e) {
+        echo "Error: " + $e->getMessage();
+        return false;
+    }
+}
