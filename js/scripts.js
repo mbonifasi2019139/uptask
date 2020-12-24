@@ -47,6 +47,13 @@ function eventListeners() {
       .querySelector(".projecto-usuario")
       .addEventListener("click", obtenerUsuarioProyecto);
   }
+
+  // Boton eliminar usuario del proyecto
+  if (document.querySelector("table tbody")) {
+    document
+      .querySelector("table tbody")
+      .addEventListener("click", seleccionarIdUsuarioHas);
+  }
 }
 
 function nuevoProyecto(e) {
@@ -208,8 +215,8 @@ function agregarTarea(e) {
             nuevaTarea.innerHTML = `
             <p>${tarea}</p>
             <div class="acciones">
-              <i class="far fa-check-circle"></li>
-              <i class="fas fa-trash"></li>
+              <i class="far fa-check-circle"></i>
+              <i class="fas fa-trash"></i>
             </div>
             `;
 
@@ -353,7 +360,10 @@ function actualizarProgreso() {
 
   // Asignar el avance a la barra
   const porcentaje = document.querySelector("#porcentaje");
-  if (porcentaje) {
+  let valorPorcentaje = document.querySelector("#numero-porcentaje");
+
+  if (porcentaje && valorPorcentaje) {
+    valorPorcentaje.innerHTML = avance + "%";
     porcentaje.style.width = avance + "%";
   }
 
@@ -384,8 +394,8 @@ function seleccionarIdUsuario(e) {
   //e.preventDefault();
 
   if (e.target.parentElement.classList.contains("btn-borrar")) {
-    const id = e.target.parentElement.getAttribute("data-id");
-    console.log(id);
+    let id = e.target.parentElement.getAttribute("data-id");
+    console.log("data-id:" + id);
     swal({
       title: "Seguro(a) ?",
       text: "Esta accion no de puede deshacer!",
@@ -402,9 +412,10 @@ function seleccionarIdUsuario(e) {
         console.log(usuarioEliminar);
         // Borrar de la DB
         eliminarUsuario(id);
+
         // Borar del HTML
         usuarioEliminar.remove();
-        swal("Eliminado!", "La tarea fue eliminada.", "success");
+        swal("Eliminado!", "La usuario fue eliminada.", "success");
       }
     });
   }
@@ -473,6 +484,90 @@ function agregarUsuarioProyecto(idUsuario, idProyecto) {
   datos.append("accion", "crear");
 
   // LLamamos a AJAX
+  let xhr = new XMLHttpRequest();
+
+  // Abrimos la conexion
+  xhr.open("POST", "inc/modelos/modelo-proyecto_has_usuario.php", true);
+
+  // On load
+  xhr.onload = function () {
+    if (this.status === 200) {
+      let respuesta = JSON.parse(xhr.responseText);
+      if (respuesta.resultado === "correcto") {
+        swal({
+          title: "Exitoso",
+          text: "Usuario agregado Correctamente",
+          type: "success",
+        }).then(() => {
+          let tableUsuarioHas = document.querySelector("table tbody");
+          // Creamos los elementos para el template
+          let nuevoUsuarioHas = document.createElement("tr"),
+            tdNombre = document.createElement("td"),
+            tdRol = document.createElement("td"),
+            tdAcciones = document.createElement("td");
+
+          nuevoUsuarioHas.setAttribute("phu-id", respuesta.id_insertado);
+          tdNombre.innerHTML = respuesta.usuario;
+          tdRol.innerHTML = respuesta.tipoUsuario;
+          tdAcciones.innerHTML = `
+          <i data-id="${respuesta.id_insertado}" class="fas fa-trash btn-borrar btn"></i>
+          `;
+
+          nuevoUsuarioHas.appendChild(tdNombre);
+          nuevoUsuarioHas.appendChild(tdRol);
+          nuevoUsuarioHas.appendChild(tdAcciones);
+
+          // Insertadmos el nuevo registro en la tabla
+          tableUsuarioHas.appendChild(nuevoUsuarioHas);
+
+          let selectUsuario = document.getElementById("usuario-proyecto");
+          selectUsuario.selectedIndex = 0;
+          console.log(respuesta);
+        });
+      }
+    }
+  };
+
+  // Enviamos los datos
+  xhr.send(datos);
+}
+
+function seleccionarIdUsuarioHas(e) {
+  e.preventDefault();
+
+  if (e.target.classList.contains("btn-borrar")) {
+    let id = e.target.parentElement.parentElement.getAttribute("phu-id");
+    swal({
+      title: "Seguro(a) ?",
+      text: "Esta accion no de puede deshacer!",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "SI, borrar!",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.value) {
+        let usuarioEliminar = e.target.parentElement.parentElement;
+        console.log(id);
+        // Borrar de la DB
+        eliminarUsuarioHas(id);
+
+        // Borar del HTML
+        usuarioEliminar.remove();
+        swal("Eliminado!", "La usuario fue eliminada.", "success");
+      }
+    });
+  }
+}
+
+function eliminarUsuarioHas(id) {
+  // Preparamos los datos
+  let datos = new FormData();
+  datos.append("idPhu", id);
+  datos.append("accion", "eliminar");
+
+  // Llamamos a AJAX
   let xhr = new XMLHttpRequest();
 
   // Abrimos la conexion

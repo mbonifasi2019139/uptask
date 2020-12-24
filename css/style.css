@@ -96,7 +96,7 @@ select {
 }
 
 .btn {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   text-decoration: none;
 }
 
@@ -109,7 +109,7 @@ select {
 }
 
 .btn-borrar {
-  color: var(--primary);
+  color: #000;
 }
 
 .campo a {
@@ -137,6 +137,14 @@ body.index {
 .barra a {
   color: white;
   text-decoration: none;
+}
+
+#numero-porcentaje {
+  width: 100%;
+  text-align: center;
+  font-weight: 900;
+  margin: 0 auto;
+  position: absolute;
 }
 
 /*** sidebar**/
@@ -285,6 +293,9 @@ div.administrador a:hover {
   margin: 0 auto;
   max-width: 800px;
   background-color: #f2f2f2;
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .porcentaje {

@@ -13,31 +13,36 @@
         <hr>
         <div class="usuarios">
             <h2>Participantes del Proyecto:</h2>
-            <div class="agregar-usuario">
-                <form action="#" class="agregar-usuario">
-                    <div class="campo">
-                        <label for="tarea">Usuario:</label>
-                        <select name="usuario" id="usuario-proyecto" required>
-                            <option disabled selected>-- Seleccione un Usuario --</option>
-                            <?php
-                            $usuarios = obtenerUsuarios();
-                            if ($usuarios->num_rows > 0) :
-                                foreach ($usuarios as $usuario) :
-                            ?>
-                                    <option value="<?php echo $usuario['id']; ?>">
-                                        <?php echo $usuario['usuario']; ?>
-                                    </option>
-                            <?php
-                                endforeach;
-                            endif; ?>
-                        </select>
-                    </div>
-                    <div class="campo enviar">
-                        <input type="hidden" value="<?php echo $id_proyecto ?>" id="id_usuario_proyecto">
-                        <input type="submit" class="boton projecto-usuario" value="Agregar">
-                    </div>
-                </form>
-            </div>
+            <?php
+            if (isset($_SESSION['tipo']) && $_SESSION['tipo'] === 1) {
+            ?>
+                <div class="agregar-usuario">
+                    <form action="#" class="agregar-usuario">
+                        <div class="campo">
+                            <label for="tarea">Usuario:</label>
+                            <select name="usuario" id="usuario-proyecto" required>
+                                <option disabled selected>-- Seleccione un Usuario --</option>
+                                <?php
+                                $usuarios = obtenerUsuarios();
+                                if ($usuarios->num_rows > 0) :
+                                    foreach ($usuarios as $usuario) :
+                                ?>
+                                        <option value="<?php echo $usuario['id']; ?>">
+                                            <?php echo $usuario['usuario']; ?>
+                                        </option>
+                                <?php
+                                    endforeach;
+                                endif; ?>
+                            </select>
+                        </div>
+                        <div class="campo enviar">
+                            <input type="hidden" value="<?php echo $id_proyecto ?>" id="id_usuario_proyecto">
+                            <input type="submit" class="boton projecto-usuario" value="Agregar">
+                        </div>
+                    </form>
+                </div>
+            <?php
+            } ?>
             <table class="lista-usuarios" style="width: 100%;">
                 <thead>
                     <th>Nombre</th>
@@ -53,21 +58,17 @@
                     <?php
 
                     $usuario_has_proyecto = obtenerUsuarioDelHas($id_proyecto);
-                    $usuarioDeHas = mysqli_fetch_assoc($usuario_has_proyecto);
-                    echo "<pre>";
-                    var_dump($usuarioDeHas);
-                    echo "</pre>";
-                    if ($usuario_has_proyecto->num_rows > 0) :
+                    if ($usuario_has_proyecto->num_rows > 0) {
                         foreach ($usuario_has_proyecto as $usuarioHas) : ?>
-                            <tr style="border: 1px solid #e1e1e1;">
+                            <tr style="border: 1px solid #e1e1e1;" phu-id="<?php echo $usuarioHas['idPhu']; ?>">
                                 <td><?php echo $usuarioHas['usuario']; ?></td>
                                 <td><?php echo $usuarioHas['nombre']; ?></td>
                                 <?php
                                 if (isset($_SESSION['tipo']) && $_SESSION['tipo'] === 1) : ?>
                                     <td>
-                                        <button data-id="<?php echo $usuarioHas['id']; ?>" type="button" class="btn-borrar btn">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
+
+                                        <i data-id="<?php echo $usuarioHas['id']; ?>" class="fas fa-trash btn-borrar btn"></i>
+
                                     </td>
                                 <?php
                                 endif;
@@ -75,7 +76,7 @@
                             </tr>
                     <?php
                         endforeach;
-                    endif; ?>
+                    } ?>
                 </tbody>
             </table>
         </div>
@@ -125,6 +126,7 @@
     <div class="avance">
         <h2>Avance del Proyecto: </h2>
         <div id="barra-avance" class="barra-avance">
+            <p id="numero-porcentaje"></p>
             <div id="porcentaje" class="porcentaje">
 
             </div>

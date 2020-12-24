@@ -16,11 +16,6 @@ if (isset($_GET['id'])) {
     $accion = "crear";
 }
 ?>
-<pre>
-    <?php
-    echo var_dump($usuario);
-    ?>
-</pre>
 <div class="contenedor-formulario">
     <h1>UpTask <span><?php echo (isset($idEditar) ? "Editar Cuenta" : "Crear Cuenta") ?></span></h1>
     <form id="formulario" class=" caja-login" method="post">
@@ -54,6 +49,9 @@ if (isset($_GET['id'])) {
             <?php
             endif; ?>
             <input type="submit" class="boton" value="<?php echo $accion ?> Cuenta">
+        </div>
+        <div class="campo">
+            <a href="index.php">Regresar</a>
         </div>
     </form>
 </div>

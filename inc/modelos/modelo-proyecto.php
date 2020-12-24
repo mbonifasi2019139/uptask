@@ -1,6 +1,6 @@
 <?php
 $accion = $_POST['accion'];
-$tarea = $_POST['tarea'];
+$proyecto = $_POST['proyecto'];
 
 if ($accion === 'crear') {
     // importar la conexion
@@ -8,7 +8,7 @@ if ($accion === 'crear') {
 
     try {
         // Realizar la consulta a la base de datos
-        $stmt = $conn->prepare('INSERT INTO proyecto (nombre) values (?)');
+        $stmt = $conn->prepare('INSERT INTO proyecto (nombre) VALUES (?)');
         $stmt->bind_param('s', $proyecto);
         $stmt->execute();
 
