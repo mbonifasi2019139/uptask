@@ -522,6 +522,10 @@ function agregarUsuarioProyecto(idUsuario, idProyecto) {
 
           let selectUsuario = document.getElementById("usuario-proyecto");
           selectUsuario.selectedIndex = 0;
+          let optionSeleccionado = document.querySelector(
+            "#option" + idUsuario
+          );
+          optionSeleccionado.remove();
           console.log(respuesta);
         });
       }

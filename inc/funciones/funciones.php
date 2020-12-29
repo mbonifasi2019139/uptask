@@ -113,3 +113,27 @@ function obtenerUsuarioProyectoHas($id_usuario, $id_proyecto)
         return false;
     }
 }
+
+function obtenerUsuarioNoRegistrados($id_proyecto)
+{
+    include 'conexion.php';
+
+    try {
+        return $conn->query("SELECT u.id AS id, u.usuario AS usuario, tp.id AS idTipo, tp.nombre AS tpNombre FROM usuario u 
+        INNER JOIN tipousuario tp ON tp.id = u.idtipousuario WHERE u.id NOT IN 
+        (SELECT u.id
+        FROM usuario u INNER JOIN tipousuario tp ON tp.id = u.idtipousuario INNER JOIN proyecto_has_usuario phu on phu.id_usuario = u.id INNER JOIN proyecto p ON phu.id_proyecto = p.id
+        WHERE p.id =  {$id_proyecto})");
+    } catch (Exception $e) {
+        echo "Error: " + $e->getMessage();
+        return false;
+    }
+}
+
+/*
+SELECT u.id, u.usuario, tp.id, tp.nombre FROM usuario u 
+INNER JOIN tipousuario tp ON tp.id = u.idtipousuario WHERE u.id NOT IN 
+(SELECT u.id
+FROM usuario u INNER JOIN tipousuario tp ON tp.id = u.idtipousuario INNER JOIN proyecto_has_usuario phu on phu.id_usuario = u.id INNER JOIN proyecto p ON phu.id_proyecto = p.id
+WHERE p.id = 1 )
+*/

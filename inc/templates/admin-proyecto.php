@@ -23,11 +23,11 @@
                             <select name="usuario" id="usuario-proyecto" required>
                                 <option disabled selected>-- Seleccione un Usuario --</option>
                                 <?php
-                                $usuarios = obtenerUsuarios();
+                                $usuarios = obtenerUsuarioNoRegistrados($id_proyecto);
                                 if ($usuarios->num_rows > 0) :
                                     foreach ($usuarios as $usuario) :
                                 ?>
-                                        <option value="<?php echo $usuario['id']; ?>">
+                                        <option value="<?php echo $usuario['id']; ?>" id="option<?php echo $usuario['id'] ?>">
                                             <?php echo $usuario['usuario']; ?>
                                         </option>
                                 <?php
@@ -114,7 +114,8 @@
                             <i class="fas fa-trash"></i>
                         </div>
                     </li>
-                <?php endforeach; ?>
+                <?php
+                endforeach; ?>
             <?php
             } else {
                 // No hay tareas
