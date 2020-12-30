@@ -58,7 +58,7 @@ function obtenerTareasProyecto($id = null)
     include 'conexion.php';
 
     try {
-        return $conn->query("SELECT id, nombre, estado FROM tarea WHERE id_proyecto = {$id}");
+        return $conn->query("SELECT t.id AS id, t.nombre AS nombre, t.estado AS estado, u.usuario AS usuario FROM tarea t INNER JOIN usuario u ON u.id = t.id_usuario WHERE id_proyecto = {$id}");
     } catch (Exception $e) {
         echo "Error: " + $e->getMessage();
         return false;

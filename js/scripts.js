@@ -151,13 +151,32 @@ function guardarProyectoDB(nombreProyecto) {
 function agregarTarea(e) {
   e.preventDefault();
 
-  let nombreTarea = document.querySelector(".nombre-tarea").value;
+  if (document.querySelector(".nombre-tarea")) {
+    var nombreTarea = document.querySelector(".nombre-tarea").value;
+  }
 
+  //let indexUsuarioElegido, indexUsuarioElegido;
+  if (document.querySelector(".nombre-tarea")) {
+    // Obtenemos el index del usuario
+    var indexUsuarioElegido = document.querySelector("#usuario-tarea").options
+      .selectedIndex;
+    // Obtenemos el id del Usuario
+    var idUsuarioElegido = document
+      .querySelector("#usuario-tarea")
+      .item(indexUsuarioElegido).value;
+
+    var nombreUsuario = document
+      .querySelector("#usuario-tarea")
+      .item(indexUsuarioElegido).innerHTML;
+    console.log(nombreUsuario);
+  }
+
+  console.log(idUsuarioElegido);
   // Validar que el campo tenga algo escrito
-  if (nombreTarea === "") {
+  if (nombreTarea === "" || isNaN(idUsuarioElegido)) {
     swal({
       title: "Error",
-      text: "Una tarea no puede ir vacia",
+      text: "Llene todos los campos de la tarea",
       type: "error",
     });
   } else {
@@ -170,6 +189,7 @@ function agregarTarea(e) {
     datos.append("tarea", nombreTarea);
     datos.append("accion", "crear");
     datos.append("id_proyecto", document.getElementById("id_proyecto").value);
+    datos.append("id_usuario", idUsuarioElegido);
     // Abrir la conexion
 
     xhr.open("POST", "inc/modelos/modelo-tarea.php", true);
@@ -187,6 +207,7 @@ function agregarTarea(e) {
           tipo = respuesta.tipo;
 
         if (resultado === "correcto") {
+          console.log(respuesta);
           // Se agrego correctamente
           if (tipo === "crear") {
             swal({
@@ -214,6 +235,7 @@ function agregarTarea(e) {
             // Construir en el HTML
             nuevaTarea.innerHTML = `
             <p>${tarea}</p>
+            <p>${nombreUsuario}</p>
             <div class="acciones">
               <i class="far fa-check-circle"></i>
               <i class="fas fa-trash"></i>
@@ -273,6 +295,7 @@ function accionesTareas(e) {
         let tareaEliminar = e.target.parentElement.parentElement;
         // Borrar de la DB
         eliminarTareaDB(tareaEliminar);
+        actualizarProgreso();
         // Borar del HTML
         tareaEliminar.remove();
         swal("Eliminado!", "La tarea fue eliminada.", "success");
@@ -363,7 +386,9 @@ function actualizarProgreso() {
   let valorPorcentaje = document.querySelector("#numero-porcentaje");
 
   if (porcentaje && valorPorcentaje) {
-    valorPorcentaje.innerHTML = avance + "%";
+    !avance
+      ? (valorPorcentaje.innerHTML = "0%")
+      : (valorPorcentaje.innerHTML = avance + "%");
     porcentaje.style.width = avance + "%";
   }
 
@@ -525,6 +550,17 @@ function agregarUsuarioProyecto(idUsuario, idProyecto) {
           let optionSeleccionado = document.querySelector(
             "#option" + idUsuario
           );
+
+          // Creando nuevo option en el select usuario-tarea
+          let selectUsuarioTarea = document.querySelector("#usuario-tarea");
+
+          let optionUsuarioTarea = document.createElement("option");
+          optionUsuarioTarea.innerHTML = respuesta.usuario;
+          optionUsuarioTarea.value = respuesta.id_insertado;
+          optionUsuarioTarea.id = respuesta.id_insertado;
+
+          selectUsuarioTarea.appendChild(optionUsuarioTarea);
+
           optionSeleccionado.remove();
           console.log(respuesta);
         });
@@ -553,12 +589,33 @@ function seleccionarIdUsuarioHas(e) {
     }).then((result) => {
       if (result.value) {
         let usuarioEliminar = e.target.parentElement.parentElement;
-        console.log(id);
         // Borrar de la DB
         eliminarUsuarioHas(id);
 
-        // Borar del HTML
+        // Agregar Usuario al Select
+        console.log(
+          e.target.parentElement.parentElement.firstElementChild.innerHTML
+        );
+        let selectUsuario = document.querySelector("#usuario-proyecto");
+        let nuevoOption = document.createElement("option");
+        nuevoOption.value = id;
+        nuevoOption.id = "option" + id;
+        nuevoOption.innerHTML =
+          e.target.parentElement.parentElement.firstElementChild.innerHTML;
+
+        selectUsuario.appendChild(nuevoOption);
+
+        // Eliminar del Select usuario tarea
+        let idUsuarioTarea = e.target.getAttribute("data-id");
+
+        let option = document.querySelector("#option" + idUsuarioTarea);
+        option.remove();
+
+        console.log(idUsuarioTarea);
+
+        // Borrar del HTML
         usuarioEliminar.remove();
+
         swal("Eliminado!", "La usuario fue eliminada.", "success");
       }
     });

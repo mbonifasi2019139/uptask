@@ -88,6 +88,22 @@
                 <label for="tarea">Tarea:</label>
                 <input type="text" placeholder="Nombre Tarea" class="nombre-tarea">
             </div>
+            <div class="campo">
+                <label for="usuario">Usuario:</label>
+                <select name="usuario" id="usuario-tarea" require>
+                    <option disabled selected>-- Selecciona un usuario --</option>
+                    <?php
+                    $usuariosTarea = obtenerUsuarioDelHas($id_proyecto);
+                    if ($usuariosTarea->num_rows > 0) :
+                        foreach ($usuariosTarea as $usuarioTarea) : ?>
+                            <option value="<?php echo $usuarioTarea['id'] ?>" id="option<?php echo $usuarioTarea['id']; ?>">
+                                <?php echo $usuarioTarea['usuario']; ?>
+                            </option>
+                    <?php
+                        endforeach;
+                    endif; ?>
+                </select>
+            </div>
             <div class="campo enviar">
                 <input type="hidden" value="<?php echo $id_proyecto; ?>" id="id_proyecto">
                 <input type="submit" class="boton nueva-tarea" value="Agregar">
@@ -109,6 +125,7 @@
                 foreach ($tareas as $tarea) : ?>
                     <li id="tarea:<?php echo $tarea['id'] ?>" class="tarea">
                         <p><?php echo $tarea['nombre'] ?></p>
+                        <p><small></small><?php echo $tarea['usuario']; ?></small></p>
                         <div class="acciones">
                             <i class="far fa-check-circle <?php echo ($tarea['estado'] === '1' ? 'completo' : ''); ?>"></i>
                             <i class="fas fa-trash"></i>
