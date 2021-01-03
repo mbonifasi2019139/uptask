@@ -2,7 +2,7 @@
 
     <?php
     $proyecto = obtenerNombreProyecto($id_proyecto);
-    if ($proyecto) : ?>
+    if ($proyecto) { ?>
 
         <h1>Proyecto Actual:
             <?php foreach ($proyecto as $nombre) : ?>
@@ -27,7 +27,7 @@
                                 if ($usuarios->num_rows > 0) :
                                     foreach ($usuarios as $usuario) :
                                 ?>
-                                        <option value="<?php echo $usuario['id']; ?>" id="option<?php echo $usuario['id'] ?>">
+                                        <option value="<?php echo $usuario['id']; ?>" id="option-u-<?php echo $usuario['id'] ?>">
                                             <?php echo $usuario['usuario']; ?>
                                         </option>
                                 <?php
@@ -60,9 +60,9 @@
                     $usuario_has_proyecto = obtenerUsuarioDelHas($id_proyecto);
                     if ($usuario_has_proyecto->num_rows > 0) {
                         foreach ($usuario_has_proyecto as $usuarioHas) : ?>
-                            <tr style="border: 1px solid #e1e1e1;" phu-id="<?php echo $usuarioHas['idPhu']; ?>">
+                            <tr style="border: 1px solid #e1e1e1;" phu-id="<?php echo $usuarioHas['idPhu']; ?>" id-usuario="<?php echo $usuarioHas['id']; ?>">
                                 <td><?php echo $usuarioHas['usuario']; ?></td>
-                                <td><?php echo $usuarioHas['nombre']; ?></td>
+                                <td style="color: gray!important;"><?php echo $usuarioHas['nombre']; ?></td>
                                 <?php
                                 if (isset($_SESSION['tipo']) && $_SESSION['tipo'] === 1) : ?>
                                     <td>
@@ -83,37 +83,42 @@
 
         <!-- -- Tareas del Proyecto -- -->
         <h2>Listado de tareas:</h2>
-        <form action="#" class="agregar-tarea">
-            <div class="campo">
-                <label for="tarea">Tarea:</label>
-                <input type="text" placeholder="Nombre Tarea" class="nombre-tarea">
-            </div>
-            <div class="campo">
-                <label for="usuario">Usuario:</label>
-                <select name="usuario" id="usuario-tarea" require>
-                    <option disabled selected>-- Selecciona un usuario --</option>
-                    <?php
-                    $usuariosTarea = obtenerUsuarioDelHas($id_proyecto);
-                    if ($usuariosTarea->num_rows > 0) :
-                        foreach ($usuariosTarea as $usuarioTarea) : ?>
-                            <option value="<?php echo $usuarioTarea['id'] ?>" id="option<?php echo $usuarioTarea['id']; ?>">
-                                <?php echo $usuarioTarea['usuario']; ?>
-                            </option>
-                    <?php
-                        endforeach;
-                    endif; ?>
-                </select>
-            </div>
-            <div class="campo enviar">
-                <input type="hidden" value="<?php echo $id_proyecto; ?>" id="id_proyecto">
-                <input type="submit" class="boton nueva-tarea" value="Agregar">
-            </div>
-        </form>
+        <?php
+        if (isset($_SESSION['tipo']) && ($_SESSION['tipo'] === 1 || $_SESSION['tipo'] === 3)) { ?>
+            <form action="#" class="agregar-tarea">
+                <div class="campo">
+                    <label for="tarea">Tarea:</label>
+                    <input type="text" placeholder="Nombre Tarea" class="nombre-tarea">
+                </div>
+                <div class="campo">
+                    <label for="usuario">Usuario:</label>
+                    <select name="usuario" id="usuario-tarea" require>
+                        <option disabled selected>-- Selecciona un usuario --</option>
+                        <?php
+                        $usuariosTarea = obtenerUsuarioDelHas($id_proyecto);
+                        if ($usuariosTarea->num_rows > 0) {
+                            foreach ($usuariosTarea as $usuarioTarea) { ?>
+                                <option value="<?php echo $usuarioTarea['id'] ?>" id="option-ut-<?php echo $usuarioTarea['id']; ?>">
+                                    <?php echo $usuarioTarea['usuario']; ?>
+                                </option>
+                        <?php
+                            }
+                        } ?>
+                    </select>
+                </div>
+                <div class="campo enviar">
+                    <input type="hidden" value="<?php echo $id_proyecto; ?>" id="id_proyecto">
+                    <input type="submit" class="boton nueva-tarea" value="Agregar">
+                </div>
+            </form>
+        <?php
+        } ?>
+
     <?php
-    else :
+    } else {
         // Si no hay proyecto seleccionados
         echo "<p>Selecciona un Proyecto a la izquierda</p>";
-    endif; ?>
+    } ?>
 
     <div class="listado-pendientes">
         <ul>
@@ -123,9 +128,9 @@
             if ($tareas->num_rows > 0) {
                 // Si hay tareas
                 foreach ($tareas as $tarea) : ?>
-                    <li id="tarea:<?php echo $tarea['id'] ?>" class="tarea">
+                    <li id="tarea:<?php echo $tarea['id'] ?>" class="tarea" id-tarea-usuario="<?php echo $tarea['usuarioid']; ?>">
                         <p><?php echo $tarea['nombre'] ?></p>
-                        <p><small></small><?php echo $tarea['usuario']; ?></small></p>
+                        <p style="color: gray!important;"><small></small><?php echo $tarea['usuario']; ?></small></p>
                         <div class="acciones">
                             <i class="far fa-check-circle <?php echo ($tarea['estado'] === '1' ? 'completo' : ''); ?>"></i>
                             <i class="fas fa-trash"></i>

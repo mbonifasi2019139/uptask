@@ -27,7 +27,8 @@ if ($accion === "crear") {
                 'resultado' => 'correcto',
                 'id_insertado' => $stmt->insert_id,
                 'usuario' => $nombreUsuario,
-                'tipoUsuario' => $tipoUsuario
+                'tipoUsuario' => $tipoUsuario,
+                'id_usuario' => $idUsuario
             );
         } else {
             $respuesta = array(

@@ -17,7 +17,7 @@
                 ?>
                         <tr>
                             <td><?php echo $usuario["usuario"]; ?></td>
-                            <td><?php echo $usuario["nombre"]; ?></td>
+                            <td style="color: gray!important;"><?php echo $usuario["nombre"]; ?></td>
                             <td>
                                 <a class="btn-editar btn" href="formulario.php?id=<?php echo $usuario['id'] ?>">
                                     <i class=" fas fa-pen-square"></i>
@@ -33,6 +33,7 @@
                 ?>
             </tbody>
         </table>
+        <a href="formulario.php" class="boton accion">Crear Nuevo Usuario</a>
     </div>
-    <a href="formulario.php" class="boton">Crear Nuevo Usuario</a>
+
 </div>

@@ -168,10 +168,8 @@ function agregarTarea(e) {
     var nombreUsuario = document
       .querySelector("#usuario-tarea")
       .item(indexUsuarioElegido).innerHTML;
-    console.log(nombreUsuario);
   }
 
-  console.log(idUsuarioElegido);
   // Validar que el campo tenga algo escrito
   if (nombreTarea === "" || isNaN(idUsuarioElegido)) {
     swal({
@@ -231,6 +229,7 @@ function agregarTarea(e) {
 
             // Agregar la clase tarea
             nuevaTarea.classList.add("tarea");
+            nuevaTarea.setAttribute("id-tarea-usuario", idUsuarioElegido);
 
             // Construir en el HTML
             nuevaTarea.innerHTML = `
@@ -474,7 +473,6 @@ function eliminarUsuario(id) {
 // Obtenemos el id del usuario y el id del proyecto
 function obtenerUsuarioProyecto(e) {
   e.preventDefault();
-  console.log("works");
 
   // Obteneniendo el id del usuario
   let indexUsuario, idUsuario;
@@ -532,6 +530,7 @@ function agregarUsuarioProyecto(idUsuario, idProyecto) {
             tdAcciones = document.createElement("td");
 
           nuevoUsuarioHas.setAttribute("phu-id", respuesta.id_insertado);
+          nuevoUsuarioHas.setAttribute("id-usuario", respuesta.id_usuario);
           tdNombre.innerHTML = respuesta.usuario;
           tdRol.innerHTML = respuesta.tipoUsuario;
           tdAcciones.innerHTML = `
@@ -548,7 +547,7 @@ function agregarUsuarioProyecto(idUsuario, idProyecto) {
           let selectUsuario = document.getElementById("usuario-proyecto");
           selectUsuario.selectedIndex = 0;
           let optionSeleccionado = document.querySelector(
-            "#option" + idUsuario
+            "#option-u-" + idUsuario
           );
 
           // Creando nuevo option en el select usuario-tarea
@@ -556,8 +555,8 @@ function agregarUsuarioProyecto(idUsuario, idProyecto) {
 
           let optionUsuarioTarea = document.createElement("option");
           optionUsuarioTarea.innerHTML = respuesta.usuario;
-          optionUsuarioTarea.value = respuesta.id_insertado;
-          optionUsuarioTarea.id = respuesta.id_insertado;
+          optionUsuarioTarea.value = respuesta.id_usuario;
+          optionUsuarioTarea.id = "option-ut-" + respuesta.id_usuario;
 
           selectUsuarioTarea.appendChild(optionUsuarioTarea);
 
@@ -577,6 +576,9 @@ function seleccionarIdUsuarioHas(e) {
 
   if (e.target.classList.contains("btn-borrar")) {
     let id = e.target.parentElement.parentElement.getAttribute("phu-id");
+    let idUsuario = e.target.parentElement.parentElement.getAttribute(
+      "id-usuario"
+    );
     swal({
       title: "Seguro(a) ?",
       text: "Esta accion no de puede deshacer!",
@@ -589,18 +591,13 @@ function seleccionarIdUsuarioHas(e) {
     }).then((result) => {
       if (result.value) {
         let usuarioEliminar = e.target.parentElement.parentElement;
-        // Borrar de la DB
-        eliminarUsuarioHas(id);
 
         // Agregar Usuario al Select
-        console.log(
-          e.target.parentElement.parentElement.firstElementChild.innerHTML
-        );
         let selectUsuario = document.querySelector("#usuario-proyecto");
         let nuevoOption = document.createElement("option");
-        nuevoOption.value = id;
-        nuevoOption.id = "option" + id;
-        nuevoOption.innerHTML =
+        nuevoOption.value = idUsuario;
+        nuevoOption.id = "option-u-" + idUsuario;
+        nuevoOption.innerText =
           e.target.parentElement.parentElement.firstElementChild.innerHTML;
 
         selectUsuario.appendChild(nuevoOption);
@@ -608,15 +605,20 @@ function seleccionarIdUsuarioHas(e) {
         // Eliminar del Select usuario tarea
         let idUsuarioTarea = e.target.getAttribute("data-id");
 
-        let option = document.querySelector("#option" + idUsuarioTarea);
+        let option = document.querySelector(
+          "#usuario-tarea #option-ut-" + idUsuarioTarea
+        );
         option.remove();
-
-        console.log(idUsuarioTarea);
 
         // Borrar del HTML
         usuarioEliminar.remove();
 
-        swal("Eliminado!", "La usuario fue eliminada.", "success");
+        // Eliminar tareas usuario
+        eliminarUsuarioTarea(idUsuario);
+
+        // Borrar de la DB
+        eliminarUsuarioHas(id);
+        actualizarProgreso();
       }
     });
   }
@@ -638,10 +640,24 @@ function eliminarUsuarioHas(id) {
   xhr.onload = function () {
     if (this.status === 200) {
       let respuesta = JSON.parse(xhr.responseText);
-      console.log(respuesta);
+      if (respuesta.respuesta === "correcto") {
+        console.log(respuesta);
+        swal("Eliminado!", "La usuario fue eliminada.", "success");
+      }
     }
   };
 
   // Enviamos los datos
   xhr.send(datos);
+}
+
+function eliminarUsuarioTarea(id) {
+  let tarea = document.querySelectorAll(".listado-pendientes ul li");
+
+  for (let index = 0; index < tarea.length; index++) {
+    if (tarea[index].getAttribute("id-tarea-usuario") === id) {
+      tarea[index].remove();
+    }
+    console.log("parametro id: " + id);
+  }
 }
